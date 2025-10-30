@@ -8,10 +8,12 @@
     <artifactId>langchain4j-hwl</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>langchain4j-hwl-Maven父工程POM配置</name>
+    <name>langchain4j-hwl</name>
 
     <modules>
-        <module>langchain4j-01</module>
+        <module>langchain4j-01-base</module>
+        <module>langchain4j-02-aiservices</module>
+        <module>langchain4j-03-agent</module>
     </modules>
 
 
