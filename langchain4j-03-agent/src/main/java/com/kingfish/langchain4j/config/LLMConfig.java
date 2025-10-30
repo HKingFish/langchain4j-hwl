@@ -4,6 +4,8 @@ import com.kingfish.langchain4j.service.agents.*;
 import dev.langchain4j.agentic.AgenticServices;
 import dev.langchain4j.agentic.UntypedAgent;
 import dev.langchain4j.agentic.agent.AgentResponse;
+import dev.langchain4j.agentic.supervisor.SupervisorAgent;
+import dev.langchain4j.agentic.supervisor.SupervisorResponseStrategy;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
@@ -355,6 +357,41 @@ public class LLMConfig {
                 .sequenceBuilder(ExpertRouterAgentWithMemory.class)
                 .subAgents(categoryRouter, expertsAgent)
                 .outputKey("response")
+                .build();
+    }
+
+
+    /***************************************************/
+
+
+    @Bean
+    public SupervisorAgent supervisorAgent(ChatModel chatModel) {
+        BankTool bankTool = new BankTool();
+        bankTool.createAccount("Mario", 1000.0);
+        bankTool.createAccount("Georgios", 1000.0);
+
+        WithdrawAgent withdrawAgent = AgenticServices
+                .agentBuilder(WithdrawAgent.class)
+                .chatModel(chatModel)
+                .tools(bankTool)
+                .build();
+        CreditAgent creditAgent = AgenticServices
+                .agentBuilder(CreditAgent.class)
+                .chatModel(chatModel)
+                .tools(bankTool)
+                .build();
+
+        ExchangeAgent exchangeAgent = AgenticServices
+                .agentBuilder(ExchangeAgent.class)
+                .chatModel(chatModel)
+                .tools(new ExchangeTool())
+                .build();
+
+        return AgenticServices
+                .supervisorBuilder()
+                .chatModel(chatModel)
+                .subAgents(withdrawAgent, creditAgent, exchangeAgent)
+                .responseStrategy(SupervisorResponseStrategy.SUMMARY)
                 .build();
     }
 

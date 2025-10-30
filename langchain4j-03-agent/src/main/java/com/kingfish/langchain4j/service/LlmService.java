@@ -62,4 +62,13 @@ public interface LlmService {
      * @return 专家的回答
      */
     String askExpertWithHistory(String memoryId, String request);
+
+
+    /**
+     * 银行.invoke
+     *
+     * @param request 银行请求
+     * @return 银行的回答
+     */
+    String bankInvoke(String request);
 }

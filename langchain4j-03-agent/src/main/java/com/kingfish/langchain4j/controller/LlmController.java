@@ -51,4 +51,9 @@ public class LlmController {
     public String askExpertWithHistory(String memoryId, String request) {
         return llmService.askExpertWithHistory(memoryId, request);
     }
+
+    @RequestMapping("/bankInvoke")
+    public String bankInvoke(String request) {
+        return llmService.bankInvoke(request);
+    }
 }

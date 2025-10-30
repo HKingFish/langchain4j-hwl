@@ -2,6 +2,7 @@ package com.kingfish.langchain4j.service;
 
 import com.kingfish.langchain4j.service.agents.*;
 import dev.langchain4j.agentic.UntypedAgent;
+import dev.langchain4j.agentic.supervisor.SupervisorAgent;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,9 @@ public class LlmServiceImpl implements LlmService {
 
     @Resource(name = "expertRouterAgentWithMemory")
     private ExpertRouterAgentWithMemory expertRouterAgentWithMemory;
+
+    @Resource
+    private SupervisorAgent supervisorAgent;
 
 
     @Override
@@ -69,5 +73,10 @@ public class LlmServiceImpl implements LlmService {
     @Override
     public String askExpertWithHistory(String memoryId, String request) {
         return expertRouterAgentWithMemory.ask(memoryId, request);
+    }
+
+    @Override
+    public String bankInvoke(String request) {
+        return supervisorAgent.invoke(request);
     }
 }
