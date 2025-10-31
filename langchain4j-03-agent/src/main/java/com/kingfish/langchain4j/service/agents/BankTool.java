@@ -22,6 +22,7 @@ public class BankTool {
         accounts.put(user, initialBalance);
     }
 
+    @Tool("查询指定用户的余额")
     public double getBalance(String user) {
         Double balance = accounts.get(user);
         if (balance == null) {

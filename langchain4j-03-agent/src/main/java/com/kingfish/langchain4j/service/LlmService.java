@@ -71,4 +71,12 @@ public interface LlmService {
      * @return 银行的回答
      */
     String bankInvoke(String request);
+
+    /**
+     * horoscope.invoke
+     *
+     * @param request horoscope请求
+     * @return horoscope的回答
+     */
+    String horoscopeInvoke(String request);
 }

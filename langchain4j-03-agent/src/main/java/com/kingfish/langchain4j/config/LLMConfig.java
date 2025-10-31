@@ -6,6 +6,7 @@ import dev.langchain4j.agentic.UntypedAgent;
 import dev.langchain4j.agentic.agent.AgentResponse;
 import dev.langchain4j.agentic.supervisor.SupervisorAgent;
 import dev.langchain4j.agentic.supervisor.SupervisorResponseStrategy;
+import dev.langchain4j.agentic.workflow.HumanInTheLoop;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Primary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 
 /**
@@ -364,19 +366,27 @@ public class LLMConfig {
     /***************************************************/
 
 
-    @Bean
-    public SupervisorAgent supervisorAgent(ChatModel chatModel) {
+    @Bean("bankAgent")
+    public SupervisorAgent bankAgent(ChatModel chatModel) {
         BankTool bankTool = new BankTool();
-        bankTool.createAccount("Mario", 1000.0);
-        bankTool.createAccount("Georgios", 1000.0);
+        // 初始化两个账户：张三和李四，初始余额均为 1000.0
+        bankTool.createAccount("张三", 1000.0);
+        bankTool.createAccount("李四", 1000.0);
 
         WithdrawAgent withdrawAgent = AgenticServices
                 .agentBuilder(WithdrawAgent.class)
                 .chatModel(chatModel)
                 .tools(bankTool)
                 .build();
+
         CreditAgent creditAgent = AgenticServices
                 .agentBuilder(CreditAgent.class)
+                .chatModel(chatModel)
+                .tools(bankTool)
+                .build();
+
+        BalanceAgent balanceAgent = AgenticServices
+                .agentBuilder(BalanceAgent.class)
                 .chatModel(chatModel)
                 .tools(bankTool)
                 .build();
@@ -390,9 +400,41 @@ public class LLMConfig {
         return AgenticServices
                 .supervisorBuilder()
                 .chatModel(chatModel)
-                .subAgents(withdrawAgent, creditAgent, exchangeAgent)
+                .subAgents(withdrawAgent, creditAgent, balanceAgent, new ExchangeOperator())
                 .responseStrategy(SupervisorResponseStrategy.SUMMARY)
                 .build();
     }
+
+
+    /***************************************************/
+
+    @Bean("horoscopeAgent")
+    public SupervisorAgent horoscopeAgent(ChatModel chatModel) {
+        AstrologyAgent astrologyAgent = AgenticServices
+                .agentBuilder(AstrologyAgent.class)
+                .chatModel(chatModel)
+                .build();
+
+        HumanInTheLoop humanInTheLoop = AgenticServices
+                .humanInTheLoopBuilder()
+                .description("一个询问用户星座的智能体")
+                .outputKey("sign")
+                .requestWriter(request -> {
+                    System.out.println(request);
+                    System.out.print("> ");
+                })
+                .responseReader(() -> {
+                    Scanner scanner = new Scanner(System.in);
+                    return scanner.nextLine();
+                })
+                .build();
+
+        return AgenticServices
+                .supervisorBuilder()
+                .chatModel(chatModel)
+                .subAgents(astrologyAgent, humanInTheLoop)
+                .build();
+    }
+
 
 }

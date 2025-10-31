@@ -36,8 +36,12 @@ public class LlmServiceImpl implements LlmService {
     @Resource(name = "expertRouterAgentWithMemory")
     private ExpertRouterAgentWithMemory expertRouterAgentWithMemory;
 
-    @Resource
-    private SupervisorAgent supervisorAgent;
+    @Resource(name = "bankAgent")
+    private SupervisorAgent bankAgent;
+
+    @Resource(name = "horoscopeAgent")
+    private SupervisorAgent horoscopeAgent;
+
 
 
     @Override
@@ -77,6 +81,12 @@ public class LlmServiceImpl implements LlmService {
 
     @Override
     public String bankInvoke(String request) {
-        return supervisorAgent.invoke(request);
+        return bankAgent.invoke(request);
+    }
+
+
+    @Override
+    public String horoscopeInvoke(String request) {
+        return horoscopeAgent.invoke(request);
     }
 }
