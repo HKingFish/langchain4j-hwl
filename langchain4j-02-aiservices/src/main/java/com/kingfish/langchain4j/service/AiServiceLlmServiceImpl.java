@@ -20,7 +20,7 @@ import java.util.List;
  * @Desc :
  */
 @Service
-public class LlmServiceImpl implements LlmService {
+public class AiServiceLlmServiceImpl implements AiServiceLlmService {
 
     @Resource
     private ChatAssistant chatAssistant;

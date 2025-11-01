@@ -9,7 +9,7 @@ import java.util.List;
  * @Date : 2025/10/29 9:11
  * @Desc :
  */
-public interface LlmService {
+public interface AgentLlmService {
 
     /**
      * 生成简单的故事

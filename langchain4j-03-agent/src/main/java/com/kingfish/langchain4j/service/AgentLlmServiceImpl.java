@@ -16,7 +16,7 @@ import java.util.Map;
  * @Desc :
  */
 @Service
-public class LlmServiceImpl implements LlmService {
+public class AgentLlmServiceImpl implements AgentLlmService {
 
     @Resource
     private CreativeWriter creativeWriter;

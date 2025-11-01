@@ -23,6 +23,7 @@ public class LlmController {
 
     /**
      * 简单的问答
+     *
      * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */
@@ -31,9 +32,12 @@ public class LlmController {
         return llmService.chat(userMessage);
     }
 
-     /**
+    /**
      * 带历史记录的问答
-     * @param userMessage 用户输入的消息 （我叫张三\n我叫什么名字）
+     * - 我叫张三
+     * - 我叫什么名字
+     *
+     * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */
     @RequestMapping("/chatWithHistory")
@@ -41,9 +45,11 @@ public class LlmController {
         return llmService.chatWithHistory(userMessage).text();
     }
 
-     /**
+    /**
      * 多模态问答
-     * @param userMessage 用户输入的消息 （图片中是什么动物）
+     * - 图片中是什么动物
+     *
+     * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */
     @RequestMapping("/chatWithMultimodality")
@@ -51,8 +57,11 @@ public class LlmController {
         return llmService.chatWithMultimodality(userMessage).text();
     }
 
-     /**
+    /**
      * 带持久化历史记录的问答 - low level
+     * - 我叫张三
+     * - 我叫什么名字
+     *
      * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */
@@ -61,8 +70,11 @@ public class LlmController {
         return llmService.chatWithLowLevelPersistentHistory(memoryId, userMessage).text();
     }
 
-     /**
+    /**
      * 带持久化历史记录的问答 - high level
+     * - 我叫张三
+     * - 我叫什么名字
+     *
      * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */
@@ -72,8 +84,10 @@ public class LlmController {
     }
 
 
-     /**
+    /**
      * 流式问答
+     * - 讲一个笑话
+     *
      * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */

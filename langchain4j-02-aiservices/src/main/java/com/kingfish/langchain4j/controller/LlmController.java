@@ -1,6 +1,6 @@
 package com.kingfish.langchain4j.controller;
 
-import com.kingfish.langchain4j.service.LlmService;
+import com.kingfish.langchain4j.service.AiServiceLlmService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import java.util.List;
 public class LlmController {
 
     @Resource
-    private LlmService llmService;
+    private AiServiceLlmService llmService;
 
     /**
      * 简单的问答

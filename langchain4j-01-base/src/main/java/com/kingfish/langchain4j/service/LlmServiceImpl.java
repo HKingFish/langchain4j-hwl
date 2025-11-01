@@ -70,7 +70,9 @@ public class LlmServiceImpl implements LlmService {
 
         // 构建多模态消息
         UserMessage userMessage = UserMessage.from(
+                // 文本消息
                 TextContent.from(message),
+                // 图片消息
                 ImageContent.from(base64Data, MimeTypeUtils.IMAGE_PNG_VALUE)
         );
         // 切换模型是因为 LangChain4J 官方给的apiKey token 长度不够，无法处理图片
