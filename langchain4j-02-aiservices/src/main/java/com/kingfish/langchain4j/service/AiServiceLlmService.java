@@ -60,4 +60,29 @@ public interface AiServiceLlmService {
      * @return 助手回复
      */
     Flux<String> chatWithStreaming02(String userMessage);
+
+
+    /**
+     * 带内容审核的聊天
+     *
+     * @param userMessage 用户消息
+     * @return 助手回复
+     */
+    String chatWithModeration(String userMessage);
+
+    /**
+     * 带重写的聊天
+     *
+     * @param userMessage 用户消息
+     * @return 助手回复
+     */
+    String chatWithRewriting(String userMessage);
+
+    /**
+     * 带三国野史的问答
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
+    String chatWithSg(String userMessage);
 }

@@ -28,7 +28,7 @@ import java.util.*;
  * @Desc :
  */
 @Service
-public class LlmServiceImpl implements LlmService {
+public class BaseLlmServiceImpl implements BaseLlmService {
 
     /**
      * 历史记录的问答

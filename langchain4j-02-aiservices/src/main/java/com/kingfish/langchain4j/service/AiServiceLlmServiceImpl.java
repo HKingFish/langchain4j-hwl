@@ -37,6 +37,14 @@ public class AiServiceLlmServiceImpl implements AiServiceLlmService {
     @Resource
     private FriendChatAssistant04 friendChatAssistant04;
 
+    @Resource
+    private ModerationAssistant moderationAssistant;
+
+    @Resource
+    private RewritingChatAssistant rewritingChatAssistant;
+
+    @Resource
+    private SgChatBotDelegate chatBotDelegate;
 
     @Override
     public String chat(String userMessage) {
@@ -78,5 +86,21 @@ public class AiServiceLlmServiceImpl implements AiServiceLlmService {
                         .onCompleteResponse(chatResponse -> fluxSink.complete())
                         .onError(fluxSink::error)
                         .start());
+    }
+
+    @Override
+    public String chatWithModeration(String userMessage) {
+        return moderationAssistant.chat(userMessage);
+    }
+
+    @Override
+    public String chatWithRewriting(String userMessage) {
+        return rewritingChatAssistant.chat(userMessage);
+    }
+
+
+    @Override
+    public String chatWithSg(String userMessage) {
+        return chatBotDelegate.chat(userMessage);
     }
 }

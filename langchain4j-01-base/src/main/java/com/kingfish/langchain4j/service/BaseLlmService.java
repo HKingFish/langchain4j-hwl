@@ -10,7 +10,7 @@ import java.io.IOException;
  * @Date : 2025/10/29 9:11
  * @Desc :
  */
-public interface LlmService {
+public interface BaseLlmService {
 
 
     /**
@@ -63,4 +63,5 @@ public interface LlmService {
      * @return 模型返回的消息流
      */
     Flux<String> streamChat(String message);
+
 }

@@ -15,7 +15,7 @@ import java.util.List;
  * @Desc :
  */
 @RestController
-@RequestMapping("/llm")
+@RequestMapping("/llm/ai-services")
 public class LlmController {
 
     @Resource
@@ -86,6 +86,40 @@ public class LlmController {
     @RequestMapping(value = "/chatWithStreaming02", produces = "text/event-stream")
     public Flux<String> chatWithStreaming02(String userMessage) {
         return llmService.chatWithStreaming02(userMessage);
+    }
+
+    /**
+     * 带内容审核的聊天
+     *
+     * @param userMessage 用户输入的消息
+     * @return 助手回复
+     */
+    @RequestMapping("/chatWithModeration")
+    public String chatWithModeration(String userMessage) {
+        return llmService.chatWithModeration(userMessage);
+    }
+
+    /**
+     * 带重写的聊天
+     *
+     * @param userMessage 用户输入的消息
+     * @return 助手回复
+     */
+    @RequestMapping("/chatWithRewriting")
+    public String chatWithRewriting(String userMessage) {
+        return llmService.chatWithRewriting(userMessage);
+    }
+
+
+    /**
+     * 带三国野史的问答
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
+    @RequestMapping("/chatWithSg")
+    public String chatWithSg(String userMessage) {
+        return llmService.chatWithSg(userMessage);
     }
 
 }

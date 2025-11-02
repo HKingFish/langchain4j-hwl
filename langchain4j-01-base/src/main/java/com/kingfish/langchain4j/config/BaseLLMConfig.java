@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Primary;
  * @Desc :
  */
 @Configuration
-public class LLMConfig {
+public class BaseLLMConfig {
 
     @Resource
     private RedisChatMemoryStore redisChatMemoryStore;

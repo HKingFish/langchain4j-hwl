@@ -1,6 +1,6 @@
 package com.kingfish.langchain4j.controller;
 
-import com.kingfish.langchain4j.service.LlmService;
+import com.kingfish.langchain4j.service.BaseLlmService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +16,10 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/llm")
-public class LlmController {
+public class BaseLlmController {
 
     @Resource
-    private LlmService llmService;
+    private BaseLlmService llmService;
 
     /**
      * 简单的问答
