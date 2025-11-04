@@ -16,6 +16,7 @@
         <module>langchain4j-03-agent</module>
         <module>langchain4j-04-tools</module>
         <module>langchain4j-05-rag</module>
+        <module>langchain4j-06-structured</module>
     </modules>
 
 
