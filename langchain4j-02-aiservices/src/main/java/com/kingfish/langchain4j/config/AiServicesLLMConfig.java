@@ -74,6 +74,14 @@ public class AiServicesLLMConfig {
     }
 
 
+//    @Bean
+//    public FriendChatAssistant04 friendChatAssistant04(ChatMemoryProvider chatMemoryProvider) {
+//        return AiServices.builder(FriendChatAssistant04.class)
+//                .chatModel(openAiChatModel())
+//                .chatMemoryProvider(chatMemoryProvider::get)
+//                .build();
+//    }
+
     @Bean
     public ModerationAssistant moderationAssistant() {
         OpenAiModerationModel moderationModel = OpenAiModerationModel.builder()

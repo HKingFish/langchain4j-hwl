@@ -64,4 +64,13 @@ public interface BaseLlmService {
      */
     Flux<String> streamChat(String message);
 
+
+    /**
+     * 流式问答 - 使用AiService
+     *
+     * @param message 用户输入的消息
+     * @return 模型返回的消息流
+     */
+    Flux<String> streamChatByAiService(String message);
+
 }

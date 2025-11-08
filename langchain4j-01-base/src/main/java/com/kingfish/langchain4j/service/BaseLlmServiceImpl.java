@@ -116,8 +116,6 @@ public class BaseLlmServiceImpl implements BaseLlmService {
     public Flux<String> streamChat(String message) {
         return Flux.create(emitter ->
                 aliQwenStreamingChatModel.chat(message, new StreamingChatResponseHandler() {
-
-
                     @Override
                     public void onPartialResponse(PartialResponse partialResponse, PartialResponseContext context) {
                         emitter.next(partialResponse.text());
@@ -137,5 +135,10 @@ public class BaseLlmServiceImpl implements BaseLlmService {
                         emitter.error(throwable);
                     }
                 }));
+    }
+
+    @Override
+    public Flux<String> streamChatByAiService(String message) {
+        return null;
     }
 }
