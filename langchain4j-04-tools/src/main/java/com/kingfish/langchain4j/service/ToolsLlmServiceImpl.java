@@ -3,6 +3,7 @@ package com.kingfish.langchain4j.service;
 import com.kingfish.langchain4j.service.agents.BookAssistant;
 import com.kingfish.langchain4j.service.agents.CalculatorAssistant;
 import com.kingfish.langchain4j.service.agents.DynamicAssistant;
+import com.kingfish.langchain4j.service.agents.StreamCalculatorAssistant;
 import com.kingfish.langchain4j.service.ai.ExpertRouterAgent;
 import com.kingfish.langchain4j.tools.WeatherTools;
 import dev.langchain4j.agent.tool.ToolExecutionRequest;
@@ -19,10 +20,12 @@ import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.Result;
 import dev.langchain4j.service.tool.DefaultToolExecutor;
+import dev.langchain4j.service.tool.ToolExecution;
 import dev.langchain4j.service.tool.ToolExecutor;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +38,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class LlmServiceImpl implements LlmService {
+public class ToolsLlmServiceImpl implements ToolsLlmService {
 
     @Resource
     private OpenAiChatModel chatModel;
@@ -54,6 +57,9 @@ public class LlmServiceImpl implements LlmService {
 
     @Resource
     private CalculatorAssistant calculatorAssistant;
+
+    @Resource
+    private StreamCalculatorAssistant streamCalculatorAssistant;
 
 
     @Override
@@ -124,7 +130,27 @@ public class LlmServiceImpl implements LlmService {
     @Override
     public String calculator(String userMessage) {
         Result<String> result = calculatorAssistant.chat(userMessage);
-        // 结果需要从 toolExecutions 中获取
-        return result.toolExecutions().get(0).result();
+        // 从 result 中获取工具执行的信息
+        List<ToolExecution> toolExecutions = result.toolExecutions();
+
+        ToolExecution toolExecution = toolExecutions.get(0);
+        ToolExecutionRequest request = toolExecution.request();
+        // 获取工具执行结果的“原始对象”
+        Object resultObject = toolExecution.resultObject();
+        // 结果需要从 toolExecutions 中获取 ：获取工具执行结果的“文本形式”
+        return toolExecution.result();
+    }
+
+    @Override
+    public Flux<String> calculatorStream(String userMessage) {
+        return Flux.create(emitter ->
+                streamCalculatorAssistant.chat(userMessage)
+                        // 打印 Tool 信息 :当某个工具执行完成时，会自动触发此回调，参数 `toolExecution` 包含该工具的调用详情（同普通模式的 `ToolExecution`，可获取请求、结果等
+                        // 因为
+                        .onToolExecuted(toolExecution -> emitter.next(toolExecution.result()))
+                        .onPartialResponse(emitter::next)
+                        .onCompleteResponse(completeResponse -> emitter.complete())
+                        .onError(emitter::error)
+                        .start());
     }
 }

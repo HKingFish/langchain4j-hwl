@@ -15,8 +15,8 @@ import java.util.List;
  * @Desc :
  */
 @RestController
-@RequestMapping("/llm")
-public class LlmController {
+@RequestMapping("/llm/agent")
+public class AgentLlmController {
 
     @Resource
     private AgentLlmService llmService;

@@ -1,11 +1,13 @@
 package com.kingfish.langchain4j.service;
 
+import reactor.core.publisher.Flux;
+
 /**
  * @Author : haowl
  * @Date : 2025/10/29 9:11
  * @Desc :
  */
-public interface LlmService {
+public interface ToolsLlmService {
 
 
     /**
@@ -52,5 +54,19 @@ public interface LlmService {
      */
     String dynamicChat(String userMessage);
 
+    /**
+     * 问答 - 计算器
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
     String calculator(String userMessage);
+
+    /**
+     * 流式计算
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
+    Flux<String> calculatorStream(String userMessage);
 }

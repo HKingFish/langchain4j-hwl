@@ -3,6 +3,7 @@ package com.kingfish.langchain4j.config;
 import com.kingfish.langchain4j.service.agents.BookAssistant;
 import com.kingfish.langchain4j.service.agents.CalculatorAssistant;
 import com.kingfish.langchain4j.service.agents.DynamicAssistant;
+import com.kingfish.langchain4j.service.agents.StreamCalculatorAssistant;
 import com.kingfish.langchain4j.service.ai.ExpertRouterAgent;
 import com.kingfish.langchain4j.service.ai.LegalExpert;
 import com.kingfish.langchain4j.service.ai.MedicalExpert;
@@ -33,7 +34,7 @@ import static dev.langchain4j.internal.Json.fromJson;
  * @Desc :
  */
 @Configuration
-public class LLMConfig {
+public class ToolsLLMConfig {
 
     @Resource
     private RedisChatMemoryStore redisChatMemoryStore;
@@ -147,6 +148,7 @@ public class LLMConfig {
     @Bean
     public DynamicAssistant dynamicAssistant(ChatModel chatModel) {
         ToolProvider toolProvider = request -> {
+            // 根据用户请求消息自主选择使用哪个工具
             if (request.userMessage().singleText().contains("野史")) {
                 // TODO : 做一下缓存
                 // 自定义工具
@@ -176,6 +178,8 @@ public class LLMConfig {
                 return ToolProviderResult.builder()
                         .add(toolSpecification, toolExecutor)
                         .build();
+            } else {
+                // TODO : 使用其他的工具
             }
 
             return null;
@@ -201,6 +205,14 @@ public class LLMConfig {
 //                        toolExecutionRequest, "Error: there is no tool called " + toolExecutionRequest.name()))
 //                .toolArgumentsErrorHandler((error, context) -> ToolErrorHandlerResult.text("调用参数错误"))
 //                .toolExecutionErrorHandler((error, context) -> ToolErrorHandlerResult.text("调用过程错误"))
+                .build();
+    }
+
+    @Bean
+    public StreamCalculatorAssistant streamCalculatorAssistant() {
+        return AiServices.builder(StreamCalculatorAssistant.class)
+                .streamingChatModel(aliQwenStreamingChatModel())
+                .tools(new CalculatorWithImmediateReturn())
                 .build();
     }
 

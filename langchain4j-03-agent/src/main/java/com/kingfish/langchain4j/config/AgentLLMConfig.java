@@ -3,6 +3,7 @@ package com.kingfish.langchain4j.config;
 import com.kingfish.langchain4j.service.agents.*;
 import dev.langchain4j.agentic.AgenticServices;
 import dev.langchain4j.agentic.UntypedAgent;
+import dev.langchain4j.agentic.agent.AgentRequest;
 import dev.langchain4j.agentic.agent.AgentResponse;
 import dev.langchain4j.agentic.supervisor.SupervisorAgent;
 import dev.langchain4j.agentic.supervisor.SupervisorResponseStrategy;
@@ -17,6 +18,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +35,24 @@ import java.util.concurrent.Executors;
  */
 @Slf4j
 @Configuration
-public class LLMConfig {
+public class AgentLLMConfig {
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactor) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
 
+        redisTemplate.setConnectionFactory(redisConnectionFactor);
+        //设置key序列化方式string
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        //设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        redisTemplate.afterPropertiesSet();
+
+        return redisTemplate;
+    }
 
     /**
      * OpenAi模型
@@ -169,6 +190,10 @@ public class LLMConfig {
                 .build();
     }
 
+    private void log(AgentRequest request) {
+        log.info("AgentRequest: {}: {}: {}", request.agentName(), request.inputs(), request.agenticScope());
+    }
+
     private void log(AgentResponse response) {
         log.info("AgentResponse: {}: {}", response.agentName(), response.output());
     }
@@ -294,6 +319,7 @@ public class LLMConfig {
     public CategoryRouterWithMemory categoryRouterWithMemory(ChatMemoryProvider chatMemoryProvider, @Qualifier("aliQwenModel") ChatModel chatModel) {
         return AgenticServices
                 .agentBuilder(CategoryRouterWithMemory.class)
+                .beforeAgentInvocation(this::log)
                 .afterAgentInvocation(this::log)
                 .chatModel(chatModel)
                 .chatMemoryProvider(chatMemoryProvider)
@@ -305,6 +331,7 @@ public class LLMConfig {
     public LegalExpertWithMemory legalExpertWithMemory(ChatMemoryProvider chatMemoryProvider, @Qualifier("aliQwenModel") ChatModel chatModel) {
         return AgenticServices
                 .agentBuilder(LegalExpertWithMemory.class)
+                .beforeAgentInvocation(this::log)
                 .afterAgentInvocation(this::log)
                 .chatModel(chatModel)
                 .chatMemoryProvider(chatMemoryProvider)
@@ -317,6 +344,7 @@ public class LLMConfig {
     public TechnicalExpertWithMemory technicalExpertWithMemory(ChatMemoryProvider chatMemoryProvider, @Qualifier("aliQwenModel") ChatModel chatModel) {
         return AgenticServices
                 .agentBuilder(TechnicalExpertWithMemory.class)
+                .beforeAgentInvocation(this::log)
                 .afterAgentInvocation(this::log)
                 .chatModel(chatModel)
                 .chatMemoryProvider(chatMemoryProvider)
@@ -340,7 +368,10 @@ public class LLMConfig {
 
     @Bean("expertRouterAgentWithMemory")
     public ExpertRouterAgentWithMemory expertRouterAgentWithMemory(CategoryRouterWithMemory categoryRouter, MedicalExpertWithMemory medicalExpert,
-                                                                   LegalExpertWithMemory legalExpert, TechnicalExpertWithMemory technicalExpert) {
+                                                                   LegalExpertWithMemory legalExpert, TechnicalExpertWithMemory technicalExpert,
+                                                                   RedisAgenticScopeStore agenticScopeStore) {
+//        AgenticScopePersister.setStore(agenticScopeStore);
+
         // 构建一个条件工作流 ： 根据分类路由到不同的专家
         UntypedAgent expertsAgent = AgenticServices.conditionalBuilder()
                 .subAgents(agenticScope -> agenticScope.readState("category",
@@ -349,6 +380,8 @@ public class LLMConfig {
                         CategoryRouter.RequestCategory.UNKNOWN) == CategoryRouter.RequestCategory.LEGAL, legalExpert)
                 .subAgents(agenticScope -> agenticScope.readState("category",
                         CategoryRouter.RequestCategory.UNKNOWN) == CategoryRouter.RequestCategory.TECHNICAL, technicalExpert)
+                .subAgents(agenticScope -> agenticScope.readState("category",
+                        CategoryRouter.RequestCategory.UNKNOWN) == CategoryRouter.RequestCategory.UNKNOWN, technicalExpert)
                 .build();
 
         // 清除某个 MemoryId 记录
@@ -357,6 +390,8 @@ public class LLMConfig {
         // 构建一个顺序工作流 : 先通过 categoryRouter 对问题进行分类分类，再路由到不同的专家 Agent 进行处理
         return AgenticServices
                 .sequenceBuilder(ExpertRouterAgentWithMemory.class)
+                .beforeAgentInvocation(this::log)
+                .afterAgentInvocation(this::log)
                 .subAgents(categoryRouter, expertsAgent)
                 .outputKey("response")
                 .build();
@@ -400,7 +435,8 @@ public class LLMConfig {
         return AgenticServices
                 .supervisorBuilder()
                 .chatModel(chatModel)
-                .subAgents(withdrawAgent, creditAgent, balanceAgent, new ExchangeOperator())
+                .subAgents(withdrawAgent, creditAgent, balanceAgent, exchangeAgent)
+//                .subAgents(withdrawAgent, creditAgent, balanceAgent, new ExchangeOperator())
                 .responseStrategy(SupervisorResponseStrategy.SUMMARY)
                 .build();
     }

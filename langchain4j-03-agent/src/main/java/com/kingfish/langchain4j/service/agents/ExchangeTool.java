@@ -16,8 +16,8 @@ public class ExchangeTool {
             return amount;
         }
         if (originalCurrency.equals("CNY") && targetCurrency.equals("USD")) {
-            log.info("将%s元兑换为%s美元，汇率为0.15".formatted(amount, amount * 0.15));
-            return amount * 0.15;
+            log.info("将%s元兑换为%s美元，汇率为 0.7".formatted(amount, amount / 7.0));
+            return amount / 7.0;
         }
         if (originalCurrency.equals("USD") && targetCurrency.equals("CNY")) {
             log.info("将%s美元兑换为%s元，汇率为 7".formatted(amount, amount * 7));

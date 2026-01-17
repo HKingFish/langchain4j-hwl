@@ -16,7 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/llm/ai-services")
-public class LlmController {
+public class AiServicesLlmController {
 
     @Resource
     private AiServiceLlmService llmService;

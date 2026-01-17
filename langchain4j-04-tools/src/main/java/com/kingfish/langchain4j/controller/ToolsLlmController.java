@@ -1,9 +1,10 @@
 package com.kingfish.langchain4j.controller;
 
-import com.kingfish.langchain4j.service.LlmService;
+import com.kingfish.langchain4j.service.ToolsLlmService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 
 /**
@@ -13,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/llm/tools")
-public class LlmController {
+public class ToolsLlmController {
 
     @Resource
-    private LlmService llmService;
+    private ToolsLlmService llmService;
 
     /**
      * 简单的问答
@@ -82,5 +83,16 @@ public class LlmController {
     @RequestMapping("/calculator")
     public String calculator(String userMessage) {
         return llmService.calculator(userMessage);
+    }
+
+    /**
+     * 问答 - 计算器
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
+    @RequestMapping(value = "/calculatorStream", produces = "text/event-stream")
+    public Flux<String> calculatorStream(String userMessage) {
+        return llmService.calculatorStream(userMessage);
     }
 }
