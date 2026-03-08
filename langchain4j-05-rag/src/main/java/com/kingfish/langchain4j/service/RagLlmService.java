@@ -13,7 +13,15 @@ public interface RagLlmService {
      * @param userMessage 用户输入的消息
      * @return 模型返回的消息
      */
-    String chat(String userMessage);
+    String easyChat(String userMessage);
 
+
+    /**
+     * 高级的问答
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
+    String advanceChat(String userMessage);
 
 }

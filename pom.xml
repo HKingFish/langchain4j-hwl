@@ -51,7 +51,11 @@
                 <artifactId>langchain4j-community-llm-graph-transformer</artifactId>
                 <version>${langchain4j-community-llm-graph-transformer.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-hugging-face</artifactId>
+                <version>1.0.0-beta5</version>
+            </dependency>
             <!-- Spring Boot -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -71,7 +75,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
 
         </dependencies>
     </dependencyManagement>

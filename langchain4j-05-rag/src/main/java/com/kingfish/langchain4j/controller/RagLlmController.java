@@ -27,7 +27,18 @@ public class RagLlmController {
      */
     @RequestMapping("/chat")
     public String chat(String userMessage) {
-        return llmService.chat(userMessage);
+        return llmService.easyChat(userMessage);
     }
 
+
+    /**
+     * 高级的问答
+     *
+     * @param userMessage 用户输入的消息
+     * @return 模型返回的消息
+     */
+    @RequestMapping("/advanceChat")
+    public String advanceChat(String userMessage) {
+        return llmService.advanceChat(userMessage);
+    }
 }
