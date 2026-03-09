@@ -1,24 +1,17 @@
 package com.kingfish.langchain4j.config;
 
-import com.kingfish.langchain4j.service.ai.AdvancedRagAssistant;
 import com.kingfish.langchain4j.service.ai.EasyRagAssistant;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.ClassPathDocumentLoader;
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.embedding.onnx.bgesmallenv15q.BgeSmallEnV15QuantizedEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
-import dev.langchain4j.model.openai.OpenAiTokenCountEstimator;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
-import dev.langchain4j.store.embedding.IngestionResult;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -107,63 +100,6 @@ public class RagLLMConfig {
                 .chatMemoryProvider(chatMemoryProvider)
                 // 核心作用是从预处理好的数据源（如向量数据库 / 嵌入存储）中，根据用户查询提取出最相关的内容片段，为后续 LLM 生成准确回答提供 “事实依据”，避免模型依赖过时或错误的内置知识。
                 .contentRetriever(EmbeddingStoreContentRetriever.from(embeddingStore))
-                .build();
-    }
-
-
-    @Bean
-    public AdvancedRagAssistant advancedRagAssistant(ChatModel chatModel, ChatMemoryProvider chatMemoryProvider) {
-        // 加载本地知识库
-        List<Document> documents = ClassPathDocumentLoader.loadDocuments("static/knowledge2");
-        // 构建一个内存中的向量数据库（EmbeddingStore），用于存储文档的向量表示。
-        InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
-        EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
-
-        IngestionResult ingestionResult = EmbeddingStoreIngestor.builder()
-                // 补充文章作者信息
-                .documentTransformer(document -> {
-                    if (document.metadata().getString("file_name").equals("三国演义.txt")) {
-                        document.metadata().put("author", "罗贯中");
-                    } else if (document.metadata().getString("file_name").equals("水浒传.txt")) {
-                        document.metadata().put("author", "施耐庵");
-                    }
-                    return document;
-                })
-                // 将大文档拆分：拆成1000令牌/段，重叠200令牌
-                .documentSplitter(DocumentSplitters.recursive(1000, 200, new OpenAiTokenCountEstimator("gpt-4o-mini")))
-                // 把文件名加到片段开头，提升语义搜索的准确性。
-                .textSegmentTransformer(textSegment -> TextSegment.from(
-                        textSegment.metadata().getString("file_name") + "\n" + textSegment.text(),
-                        textSegment.metadata()
-                ))
-                .embeddingModel(embeddingModel)
-                .embeddingStore(embeddingStore)
-                .build()
-                .ingest(documents);
-
-        log.info("ingestionResult tokenUsage: {}", ingestionResult.tokenUsage());
-
-        DefaultRetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()
-//                // 指定 查询转换器 ：将查询内容转化为更合规的 Query 内容
-//                .queryTransformer()
-//                // 指定 查询路由器 ：将用户查询的 Query 分配到对应的 contentRetriever上
-//                .queryRouter()
-//                // 指定 内容检索器 ：筛选与 Query 相关的 Content 内容
-//                .contentRetriever()
-//                // 指定 内容整合器 ：整合来自不同渠道的已排序 Content 列表
-//                .contentAggregator()
-//                // 指定 内容注入器 ：将筛选整合后的 Content 注入到 UserMessage 中
-//                .contentInjector()
-//                // 指定 查询(Query)和检索(ContentRetriever)时的线程处理机制
-//                .executor()
-                .build();
-
-
-        return AiServices.builder(AdvancedRagAssistant.class)
-                .chatModel(chatModel)
-                .chatMemoryProvider(chatMemoryProvider)
-                .contentRetriever(EmbeddingStoreContentRetriever.from(embeddingStore))
-//                .retrievalAugmentor()
                 .build();
     }
 

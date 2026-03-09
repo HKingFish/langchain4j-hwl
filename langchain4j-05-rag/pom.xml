@@ -51,6 +51,10 @@
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-bge-small-zh-v15-q</artifactId>
+        </dependency>
 
 
         <!--        <dependency>-->
@@ -65,6 +69,18 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-easy-rag</artifactId>
+        </dependency>
+        <!--
+            本地重排序模型（Cross-Encoder），基于 ONNX Runtime 本地运行，无需外部 API
+            需手动下载 .onnx 模型文件和 tokenizer.json 放到本地路径
+            推荐模型：BAAI/bge-reranker-v2-m3（支持中英文）
+            下载地址：https://huggingface.co/BAAI/bge-reranker-v2-m3
+            用于 ReRankingContentAggregator，对向量检索结果进行精排，提升最终答案质量
+        -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-onnx-scoring</artifactId>
+            <version>1.0.0-beta5</version>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>

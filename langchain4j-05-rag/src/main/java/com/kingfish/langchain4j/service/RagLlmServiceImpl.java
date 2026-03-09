@@ -1,6 +1,5 @@
 package com.kingfish.langchain4j.service;
 
-import com.kingfish.langchain4j.service.ai.AdvancedRagAssistant;
 import com.kingfish.langchain4j.service.ai.EasyRagAssistant;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -18,15 +17,16 @@ public class RagLlmServiceImpl implements RagLlmService {
     private EasyRagAssistant easyRagAssistant;
 
     @Resource
-    private AdvancedRagAssistant advancedRagAssistant;
+    private CustomerServiceDispatcher customerServiceDispatcher;
 
     @Override
     public String easyChat(String userMessage) {
         return easyRagAssistant.chat(userMessage);
     }
 
+
     @Override
-    public String advanceChat(String userMessage) {
-        return advancedRagAssistant.chat(userMessage);
+    public String customerServiceChat(String memoryId, String userMessage) {
+        return customerServiceDispatcher.chat(memoryId, userMessage);
     }
 }

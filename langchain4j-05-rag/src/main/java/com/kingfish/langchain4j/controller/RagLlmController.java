@@ -32,13 +32,19 @@ public class RagLlmController {
 
 
     /**
-     * 高级的问答
+     * 智能客服对话：根据用户意图自动路由到对应的专项处理逻辑
+     * 意图分类：
+     * - PRODUCT_INQUIRY（产品咨询）：结合知识库回答产品相关问题
+     * - ORDER_INQUIRY（订单查询）：处理订单状态、物流、退换货等问题
+     * - COMPLAINT（投诉建议）：处理用户投诉和改进建议
+     * - GENERAL_CHAT（通用聊天）：处理无法归类的通用问题
      *
+     * @param memoryId    会话 ID，用于维持多轮对话上下文
      * @param userMessage 用户输入的消息
-     * @return 模型返回的消息
+     * @return 客服回复内容
      */
-    @RequestMapping("/advanceChat")
-    public String advanceChat(String userMessage) {
-        return llmService.advanceChat(userMessage);
+    @RequestMapping("/customerServiceChat")
+    public String customerServiceChat(String memoryId, String userMessage) {
+        return llmService.customerServiceChat(memoryId, userMessage);
     }
 }

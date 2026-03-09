@@ -1,11 +1,11 @@
 package com.kingfish.langchain4j.service.ai;
 
 /**
- * @author : haowl
- * @date : 2026/3/9 19:15
- * @desc :
+ * @Author : haowl
+ * @Date : 2026/3/8 13:31
+ * @Desc :
  */
-public interface AdvancedRagAssistant {
+public interface BotAssistant {
     /**
      * 简单的问答
      *

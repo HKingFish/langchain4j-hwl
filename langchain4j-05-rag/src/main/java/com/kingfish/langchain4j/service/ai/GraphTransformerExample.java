@@ -1,4 +1,4 @@
-//package com.kingfish.langchain4j.service.ai;
+package com.kingfish.langchain4j.service.ai;//package com.kingfish.langchain4j.service.ai;
 //
 //import dev.langchain4j.community.data.document.transformer.graph.LLMGraphTransformer;
 //import dev.langchain4j.data.document.Document;
