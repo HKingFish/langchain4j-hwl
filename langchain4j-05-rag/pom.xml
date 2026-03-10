@@ -77,11 +77,7 @@
             下载地址：https://huggingface.co/BAAI/bge-reranker-v2-m3
             用于 ReRankingContentAggregator，对向量检索结果进行精排，提升最终答案质量
         -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-onnx-scoring</artifactId>
-            <version>1.0.0-beta5</version>
-        </dependency>
+
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-community-llm-graph-transformer</artifactId>

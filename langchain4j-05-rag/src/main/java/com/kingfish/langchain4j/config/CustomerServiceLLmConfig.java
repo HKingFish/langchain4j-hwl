@@ -10,7 +10,7 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.embedding.onnx.bgesmallenv15q.BgeSmallEnV15QuantizedEmbeddingModel;
+import dev.langchain4j.model.embedding.onnx.bgesmallzhv15q.BgeSmallZhV15QuantizedEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiTokenCountEstimator;
 import dev.langchain4j.rag.DefaultRetrievalAugmentor;
@@ -39,6 +39,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 public class CustomerServiceLLmConfig {
+    public static final String API_KEY = "Your Api Key";
 
     /**
      * 初始化嵌入模型（阿里云 text-embedding-v3，支持中文）
@@ -47,7 +48,7 @@ public class CustomerServiceLLmConfig {
     public EmbeddingModel embeddingModel() {
         return OpenAiEmbeddingModel.builder()
                 .baseUrl("https://dashscope.aliyuncs.com/compatible-mode/v1")
-                .apiKey(System.getenv("aliQwen-api"))
+                .apiKey(API_KEY)
                 .modelName("text-embedding-v3")
                 .build();
     }
@@ -116,7 +117,8 @@ public class CustomerServiceLLmConfig {
      * 检索时最多召回5条候选，相似度阈值0.6
      */
     private ContentRetriever buildProductRetriever() {
-        EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
+        log.info("智能客服产品知识库加载开始");
+        EmbeddingModel embeddingModel = new BgeSmallZhV15QuantizedEmbeddingModel();
         List<Document> documents = ClassPathDocumentLoader.loadDocuments("static/knowledge2");
         InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
         IngestionResult result = EmbeddingStoreIngestor.builder()
@@ -140,7 +142,7 @@ public class CustomerServiceLLmConfig {
      */
     private List<Query> buildQueryTransformer(Query query) {
         if (query.text().length() < 5) {
-            return List.of(Query.from("产品 " + query.text(), query.metadata()));
+            return List.of(Query.from("产品: " + query.text(), query.metadata()));
         }
         return List.of(query);
     }
@@ -176,54 +178,9 @@ public class CustomerServiceLLmConfig {
         for (int i = 0; i < contents.size(); i++) {
             sb.append(i + 1).append(". ").append(contents.get(i).textSegment().text()).append("\n");
         }
+        log.info("userMessage={}", sb.toString());
         return UserMessage.from(sb.toString());
     }
-
-//    /**
-//     * 构建重排序聚合器（LLM 打分方案，适合功能验证）
-//     * <p>
-//     * 原理：让 ChatModel 对每条候选文档与 query 的相关性打 0~10 分，归一化后排序
-//     * 优点：零额外依赖，复用已有 ChatModel，无需下载模型文件或调用专用 Rerank API
-//     * 缺点：每条文档发起一次 LLM 调用，候选5条 = 5次额外调用，延迟较高
-//     * <p>
-//     * 生产环境替换方案（二选一）：
-//     * 方案A - DashScope gte-rerank-v2（推荐）：一次 API 调用完成所有文档打分，延迟低
-//     * scoringModel = DashScopeScoringModel.builder()
-//     * .apiKey(System.getenv("aliQwen-api"))
-//     * .modelName("gte-rerank-v2")
-//     * .build();
-//     * 方案B - ONNX 本地模型：完全离线，需下载 bge-reranker-v2-m3 模型文件（约300MB）
-//     * scoringModel = new OnnxScoringModel("/path/to/model.onnx", "/path/to/tokenizer.json");
-//     */
-//    private ContentAggregator buildReRankingAggregator(ChatModel chatModel) {
-//        // ScoringModel 唯一抽象方法为 scoreAll(List<TextSegment>, String)
-//        // 对每条文档逐一调用 LLM 打分，归一化到 0.0~1.0
-//        ScoringModel llmScoringModel = (segments, query) -> {
-//            List<Double> scores = segments.stream().map(segment -> {
-//                String prompt = String.format("""
-//                        请评估以下文档与查询的相关性，只返回一个 0 到 10 之间的整数分数，不要返回任何其他内容。
-//                        查询：%s
-//                        文档：%s
-//                        分数：""", query, segment.text());
-//                String llmResponse = chatModel.chat(prompt).trim();
-//                try {
-//                    // 归一化到 0.0~1.0
-//                    double score = Double.parseDouble(llmResponse) / 10.0;
-//                    return Math.min(1.0, Math.max(0.0, score));
-//                } catch (NumberFormatException e) {
-//                    log.warn("LLM 重排序打分解析失败，原始返回：{}，默认分数 0.5", llmResponse);
-//                    return 0.5;
-//                }
-//            }).toList();
-//            return Response.from(scores);
-//        };
-//
-//        return ReRankingContentAggregator.builder()
-//                .scoringModel(llmScoringModel)
-//                // 从向量检索召回的5条候选中精选3条注入 LLM 上下文
-//                .maxResults(3)
-//                .build();
-//    }
 
 
     /**
@@ -247,7 +204,7 @@ public class CustomerServiceLLmConfig {
      */
     private ContentAggregator buildReRankingAggregator() {
         DashScopeScoringModel scoringModel = DashScopeScoringModel.builder()
-                .apiKey(System.getenv("aliQwen-api"))
+                .apiKey(API_KEY)
                 // gte-rerank-v2：支持中英文等50+语言
                 // 可替换为 qwen3-rerank：支持100+语言，有免费额度
                 .modelName("gte-rerank-v2")

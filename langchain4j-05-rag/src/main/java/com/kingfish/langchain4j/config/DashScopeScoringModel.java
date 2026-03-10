@@ -102,7 +102,8 @@ public class DashScopeScoringModel implements ScoringModel {
                         // 不返回原始文档内容，减少网络传输
                         .set("return_documents", false));
 
-        log.info("调用 DashScope Rerank API：model={}, query={}, documents数量={}", modelName, query, documents.size());
+        log.info("调用 DashScope Rerank API：model={}, query={}, documents={}",
+                modelName, query, documents);
 
         try (HttpResponse response = HttpRequest.post(RERANK_URL)
                 .header("Authorization", "Bearer " + apiKey)

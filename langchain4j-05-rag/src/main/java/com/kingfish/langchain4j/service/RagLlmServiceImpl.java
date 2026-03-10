@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RagLlmServiceImpl implements RagLlmService {
 
-    @Resource
+    //    @Resource
     private EasyRagAssistant easyRagAssistant;
 
     @Resource
