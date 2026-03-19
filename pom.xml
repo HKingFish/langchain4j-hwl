@@ -17,6 +17,8 @@
         <module>langchain4j-04-tools</module>
         <module>langchain4j-05-rag</module>
         <module>langchain4j-06-structured</module>
+        <module>langchain4j-07-guardrails</module>
+        <module>langchain4j-10-mcp-mysql-server</module>
     </modules>
 
 

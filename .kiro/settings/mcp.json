@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "mysql-mcp-server": {
+      "command": "java",
+      "args": [
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-jar",
+        "C:\\SelfWork\\code\\github\\langchain4j-hwl\\langchain4j-08-mcp-mysql-server\\target\\langchain4j-08-mcp-mysql-server-1.0-SNAPSHOT.jar",
+        "jdbc:mysql://localhost:3306/demo",
+        "root",
+        "root"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "listTables",
+        "executeQuery",
+        "describeTable"
+      ]
+    }
+  }
+}
