@@ -8,4 +8,5 @@ package com.kingfish.langchain4j.service;
 public interface GuardrailsLlmService {
 
 
+    String chat(String prompt);
 }

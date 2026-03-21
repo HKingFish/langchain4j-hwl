@@ -1,8 +1,8 @@
 package com.kingfish.langchain4j.config;
 
 import com.kingfish.langchain4j.service.ai.ChatAssistant;
-import com.kingfish.langchain4j.service.guardrail.FirstInputGuardrail;
-import com.kingfish.langchain4j.service.guardrail.FirstOutputGuardrail;
+import com.kingfish.langchain4j.service.guardrail.DemoInputGuardrail;
+import com.kingfish.langchain4j.service.guardrail.DemoOutputGuardrail;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
@@ -79,10 +79,10 @@ public class GuardrailsLLMConfig {
         return AiServices.builder(ChatAssistant.class)
                 .chatMemoryProvider(chatMemoryProvider)
                 .chatModel(chatModel)
-//                .inputGuardrailClasses(FirstInputGuardrail.class)
-//                .outputGuardrailClasses(FirstOutputGuardrail.class)
-                .inputGuardrails(new FirstInputGuardrail())
-                .outputGuardrails(new FirstOutputGuardrail(), )
+                .inputGuardrailClasses(DemoInputGuardrail.class)
+                .outputGuardrailClasses(DemoOutputGuardrail.class)
+//                .inputGuardrails(new DemoInputGuardrail())
+//                .outputGuardrails(new DemoOutputGuardrail())
                 .build();
     }
 

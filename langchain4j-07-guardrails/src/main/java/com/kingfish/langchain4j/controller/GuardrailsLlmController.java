@@ -18,4 +18,9 @@ public class GuardrailsLlmController {
     @Resource
     private GuardrailsLlmService llmService;
 
+
+    @RequestMapping("/chat")
+    public String chat(String prompt) {
+        return llmService.chat(prompt);
+    }
 }
