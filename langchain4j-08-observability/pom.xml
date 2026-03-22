@@ -10,61 +10,74 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>langchain4j-08-mcp-mysql-server</artifactId>
-    <name>langchain4j-08-mcp-mysql-server</name>
+    <artifactId>langchain4j-08-observability</artifactId>
+    <name>langchain4j-08-observability</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- 本模块所有 langchain4j 依赖统一使用 1.11.0 系列，覆盖父 BOM 的 1.8.0 -->
-        <langchain4j.override.version>1.11.0</langchain4j.override.version>
-        <langchain4j-community.version>1.11.0-beta19</langchain4j-community.version>
     </properties>
 
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>1.11.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-        <!-- langchain4j 核心依赖（显式指定版本，覆盖父 BOM 的 1.8.0，避免 NoSuchMethodError） -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-reactor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-core</artifactId>
-            <version>${langchain4j.override.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <!-- langchain4j MCP 核心模块（提供 McpImplementation 等协议类） -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-mcp</artifactId>
-            <version>${langchain4j-community.version}</version>
-        </dependency>
 
-        <!-- langchain4j 社区 MCP Server 模块（用于构建 Stdio MCP 服务） -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-community-mcp-server</artifactId>
-            <version>${langchain4j-community.version}</version>
-        </dependency>
-
-        <!-- MySQL 驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- HikariCP 数据库连接池 -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-
-        <!-- SLF4J 日志实现（MCP Stdio 模式下日志必须输出到 stderr） -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.17</version>
-        </dependency>
     </dependencies>
 
     <build>
