@@ -28,6 +28,7 @@ public class MySqlMcpDemo {
     private static final int REQUIRED_ARGS_COUNT = 3;
 
     public static void main(String[] args) throws Exception {
+
         // 校验命令行参数
         if (args.length < REQUIRED_ARGS_COUNT) {
             System.err.println("参数错误！正确用法：java -jar mysql-mcp-server.jar <jdbcUrl> <username> <password>");
