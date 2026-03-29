@@ -21,7 +21,14 @@
         <langchain4j.override.version>1.11.0</langchain4j.override.version>
         <langchain4j-community.version>1.11.0-beta19</langchain4j-community.version>
     </properties>
-    <dependencies></dependencies>
+
+    <modules>
+        <module>mcp-mysql-local-server</module>
+        <module>mcp-mysql-remote-server</module>
+        <module>mcp-demo</module>
+        <module>mcp-mysql-client</module>
+    </modules>
+    <dependencies/>
 
     <!--    <dependencies>-->
     <!--        &lt;!&ndash; langchain4j 核心依赖（显式指定版本，覆盖父 BOM 的 1.8.0，避免 NoSuchMethodError） &ndash;&gt;-->
