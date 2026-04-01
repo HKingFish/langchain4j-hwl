@@ -13,14 +13,14 @@ import java.util.concurrent.CountDownLatch;
  * MySQL MCP 服务启动入口
  * 通过 Stdio 协议暴露 MySQL 操作工具，供 MCP 客户端（如 Kiro、Claude Desktop）调用
  */
-public class MySqlMcpDemo {
+public class McpLocalServerApplication {
 
     /** MCP Stdio 模式下，日志必须输出到 stderr，避免污染 stdout 的 JSON-RPC 通信流 */
     static {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.err");
     }
 
-    private static final Logger log = LoggerFactory.getLogger(MySqlMcpDemo.class);
+    private static final Logger log = LoggerFactory.getLogger(McpLocalServerApplication.class);
 
     /**
      * 命令行参数数量（jdbcUrl、username、password）

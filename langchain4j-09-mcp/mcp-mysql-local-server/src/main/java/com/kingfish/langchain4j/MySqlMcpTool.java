@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +18,8 @@ import java.util.Map;
  * MySQL 数据库操作工具类
  * 通过 MCP 协议暴露 SQL 查询与更新能力，供 LLM 调用
  */
+@Slf4j
 public class MySqlMcpTool {
-
-    private static final Logger log = LoggerFactory.getLogger(MySqlMcpTool.class);
 
     /**
      * 连接池最大连接数

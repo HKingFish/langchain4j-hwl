@@ -10,8 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Desc :
  */
 @SpringBootApplication
-public class McpApplication {
+public class McpRemoteServerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(McpApplication.class, args);
+        SpringApplication.run(McpRemoteServerApplication.class, args);
     }
 }
