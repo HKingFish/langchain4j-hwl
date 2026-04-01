@@ -6,5 +6,7 @@ package com.kingfish.langchain4j.mcp.service;
  * @Desc :
  */
 public interface McpService {
-    String chat(String message);
+    String localChat(String message);
+
+    String remoteChat(String message);
 }

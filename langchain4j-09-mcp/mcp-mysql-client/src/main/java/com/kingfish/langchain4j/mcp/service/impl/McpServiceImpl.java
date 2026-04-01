@@ -1,6 +1,7 @@
 package com.kingfish.langchain4j.mcp.service.impl;
 
-import com.kingfish.langchain4j.mcp.client.ai.MySqlAssistant;
+import com.kingfish.langchain4j.mcp.client.ai.MySqlLocalAssistant;
+import com.kingfish.langchain4j.mcp.client.ai.MySqlRemoteAssistant;
 import com.kingfish.langchain4j.mcp.service.McpService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class McpServiceImpl implements McpService {
     @Resource
-    private MySqlAssistant mySqlAssistant;
+    private MySqlLocalAssistant mySqlLocalAssistant;
+
+    @Resource
+    private MySqlRemoteAssistant mySqlRemoteAssistant;
 
     @Override
-    public String chat(String message) {
-        return mySqlAssistant.chat(message);
+    public String localChat(String message) {
+        return mySqlLocalAssistant.chat(message);
+    }
+
+    @Override
+    public String remoteChat(String message) {
+        return mySqlRemoteAssistant.chat(message);
     }
 }

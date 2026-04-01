@@ -17,8 +17,14 @@ public class McpController {
     private McpService mcpService;
 
 
-    @RequestMapping("/chat")
-    public String chat(String message) {
-        return mcpService.chat(message);
+    @RequestMapping("/localChat")
+    public String localChat(String message) {
+        return mcpService.localChat(message);
+    }
+
+
+    @RequestMapping("/remoteChat")
+    public String remoteChat(String message) {
+        return mcpService.remoteChat(message);
     }
 }
