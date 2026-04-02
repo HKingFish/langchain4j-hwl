@@ -10,8 +10,8 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>langchain4j-09-mcp</artifactId>
-    <name>langchain4j-09-mcp</name>
+    <artifactId>langchain4j-09-skills</artifactId>
+    <name>langchain4j-09-skills</name>
     <packaging>pom</packaging>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -22,11 +22,6 @@
         <langchain4j-community.version>1.11.0-beta19</langchain4j-community.version>
     </properties>
 
-    <modules>
-        <module>mcp-mysql-local-server</module>
-        <module>mcp-mysql-remote-server</module>
-        <module>mcp-mysql-client</module>
-    </modules>
 
     <!-- 覆盖根 BOM 中 langchain4j 系列的版本锁定，统一为 1.11.0 -->
     <dependencyManagement>
@@ -41,52 +36,46 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies/>
 
-    <!--    <dependencies>-->
-    <!--        &lt;!&ndash; langchain4j 核心依赖（显式指定版本，覆盖父 BOM 的 1.8.0，避免 NoSuchMethodError） &ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>dev.langchain4j</groupId>-->
-    <!--            <artifactId>langchain4j-core</artifactId>-->
-    <!--            <version>${langchain4j.override.version}</version>-->
-    <!--        </dependency>-->
+    <dependencies>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-skills</artifactId>
+            <version>1.12.2-beta22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 
-    <!--        &lt;!&ndash; langchain4j MCP 核心模块（提供 McpImplementation 等协议类） &ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>dev.langchain4j</groupId>-->
-    <!--            <artifactId>langchain4j-mcp</artifactId>-->
-    <!--            <version>${langchain4j-community.version}</version>-->
-    <!--        </dependency>-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+        </dependency>
+        <!-- langchain4j 核心依赖（显式指定版本，覆盖父 BOM 的 1.8.0，避免 NoSuchMethodError） -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-core</artifactId>
+            <version>${langchain4j.override.version}</version>
+        </dependency>
 
-    <!--        &lt;!&ndash; langchain4j 社区 MCP Server 模块（用于构建 Stdio MCP 服务） &ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>dev.langchain4j</groupId>-->
-    <!--            <artifactId>langchain4j-community-mcp-server</artifactId>-->
-    <!--            <version>${langchain4j-community.version}</version>-->
-    <!--        </dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
-    <!--        &lt;!&ndash; MySQL 驱动 &ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>mysql</groupId>-->
-    <!--            <artifactId>mysql-connector-java</artifactId>-->
-    <!--            <version>8.0.33</version>-->
-    <!--            <scope>runtime</scope>-->
-    <!--        </dependency>-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+        </dependency>
 
-    <!--        &lt;!&ndash; HikariCP 数据库连接池 &ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>com.zaxxer</groupId>-->
-    <!--            <artifactId>HikariCP</artifactId>-->
-    <!--            <version>5.0.1</version>-->
-    <!--        </dependency>-->
-
-    <!--        &lt;!&ndash; SLF4J 日志实现（MCP Stdio 模式下日志必须输出到 stderr） &ndash;&gt;-->
-    <!--        <dependency>-->
-    <!--            <groupId>org.slf4j</groupId>-->
-    <!--            <artifactId>slf4j-simple</artifactId>-->
-    <!--            <version>2.0.17</version>-->
-    <!--        </dependency>-->
-    <!--    </dependencies>-->
+        <!-- SLF4J 日志实现（MCP Stdio 模式下日志必须输出到 stderr） -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.17</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

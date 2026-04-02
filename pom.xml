@@ -20,8 +20,7 @@
         <module>langchain4j-07-guardrails</module>
         <module>langchain4j-08-observability</module>
         <module>langchain4j-09-mcp</module>
-        <module>langchain4j-09-mcp/mcp-mysql-local-server</module>
-        <module>langchain4j-09-mcp/mcp-demo</module>
+        <module>langchain4j-09-skills</module>
     </modules>
 
 
