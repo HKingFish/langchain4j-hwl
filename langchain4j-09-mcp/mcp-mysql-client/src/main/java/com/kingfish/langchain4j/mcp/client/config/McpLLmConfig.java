@@ -2,16 +2,23 @@ package com.kingfish.langchain4j.mcp.client.config;
 
 import com.kingfish.langchain4j.mcp.client.ai.MySqlLocalAssistant;
 import com.kingfish.langchain4j.mcp.client.ai.MySqlRemoteAssistant;
+import com.kingfish.langchain4j.mcp.client.ai.MySqlRemoteStreamAssistant;
 import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.mcp.McpToolProvider;
 import dev.langchain4j.mcp.client.DefaultMcpClient;
+import dev.langchain4j.mcp.client.McpCallContext;
 import dev.langchain4j.mcp.client.McpClient;
+import dev.langchain4j.mcp.client.McpClientListener;
+import dev.langchain4j.mcp.client.logging.McpLogMessage;
+import dev.langchain4j.mcp.client.logging.McpLogMessageHandler;
 import dev.langchain4j.mcp.client.transport.McpTransport;
 import dev.langchain4j.mcp.client.transport.http.StreamableHttpMcpTransport;
 import dev.langchain4j.mcp.client.transport.stdio.StdioMcpTransport;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.tool.ToolExecutionResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MCP 大模型配置类
@@ -78,10 +86,21 @@ public class McpLLmConfig {
                 .build();
     }
 
+    /**
+     * OpenAI 流式模型，用于流式对话
+     */
+    @Bean
+    public OpenAiStreamingChatModel openAiStreamingChatModel() {
+        return OpenAiStreamingChatModel.builder()
+                .baseUrl("http://langchain4j.dev/demo/openai/v1")
+                .apiKey("demo")
+                .modelName("gpt-4o-mini")
+                .build();
+    }
+
 
     @Bean
     public MySqlRemoteAssistant mySqlRemoteAssistant(ChatModel chatModel) {
-
         McpTransport transport = StreamableHttpMcpTransport.builder()
                 .url("http://localhost:8080/langchain4j/mcp/remote-mysql/mcpTools")
                 .timeout(Duration.ofSeconds(MCP_TRANSPORT_TIMEOUT_SECONDS))
@@ -124,6 +143,17 @@ public class McpLLmConfig {
 
         McpClient mcpClient = DefaultMcpClient.builder()
                 .key("MysqlLocalMcp")
+                .listener(new McpClientListener() {
+                    @Override
+                    public void beforeExecuteTool(McpCallContext context) {
+                        log.info("本地 MCP 执行工具前：{}", context);
+                    }
+
+                    @Override
+                    public void afterExecuteTool(McpCallContext context, ToolExecutionResult result, Map<String, Object> rawResult) {
+                        log.info("本地 MCP 执行工具后后：{}", result);
+                    }
+                })
                 .transport(transport)
                 .build();
 
@@ -138,6 +168,37 @@ public class McpLLmConfig {
 
         return AiServices.builder(MySqlLocalAssistant.class)
                 .chatModel(chatModel)
+                .toolProvider(toolProvider)
+                .build();
+    }
+
+    /**
+     * 远程 MCP 流式对话助手
+     * 通过 StreamableHttp 连接远程 MCP Server，使用 StreamingChatModel 实现逐 token 流式输出
+     *
+     * @param streamingChatModel 流式模型
+     * @return 流式助手实例
+     */
+    @Bean
+    public MySqlRemoteStreamAssistant mySqlRemoteStreamAssistant(OpenAiStreamingChatModel streamingChatModel) {
+        McpTransport transport = StreamableHttpMcpTransport.builder()
+                .url("http://localhost:8080/langchain4j/mcp/remote-mysql/mcpTools")
+                .timeout(Duration.ofSeconds(MCP_TRANSPORT_TIMEOUT_SECONDS))
+                .logRequests(true)
+                .logResponses(true)
+                .build();
+
+        McpClient mcpClient = DefaultMcpClient.builder()
+                .key("MysqlRemoteStreamMcp")
+                .transport(transport)
+                .build();
+
+        McpToolProvider toolProvider = McpToolProvider.builder()
+                .mcpClients(mcpClient)
+                .build();
+
+        return AiServices.builder(MySqlRemoteStreamAssistant.class)
+                .streamingChatModel(streamingChatModel)
                 .toolProvider(toolProvider)
                 .build();
     }
