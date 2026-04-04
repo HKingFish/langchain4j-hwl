@@ -92,6 +92,36 @@ public class SkillsLLMConfig {
         // 从文件系统加载 Skills（包含 database-ops 等技能）
         Skills skills = Skills.from(FileSystemSkillLoader.loadSkills(Path.of(SKILLS_DIRECTORY)));
 
+//        // 编程式创建 Skill（等价于 SKILL.md 文件加载，但内容直接在代码中定义）
+//        Skill databaseOpsSkill = Skill.builder()
+//                .name("database-ops")
+//                .description("数据库运维技能，根据用户意图智能选择合适的 MCP 工具完成数据库查询、表结构查看、数据变更等操作")
+//                // 将 resources/skills/database-ops/SKILL.md 的内容粘贴在此
+//                .content("""
+//                        # 数据库运维技能
+//                        ...
+//                        """)
+//                .build();
+
+        //
+//        Skills skills = Skills.builder()
+//                .skills(databaseOpsSkill)
+//                // 自定义activate_skill工具的配置
+//                .activateSkillToolConfig(ActivateSkillToolConfig.builder()
+//                        .name("load_skill") // 自定义工具名，默认是activate_skill
+//                        .description("加载指定技能的详细指令")
+//                        .parameterName("skill_name")
+//                        .parameterDescription("要加载的技能的名称")
+//                        .build())
+//                // 自定义read_skill_resource工具的配置
+//                .readResourceToolConfig(ReadResourceToolConfig.builder()
+//                        .name("read_doc")
+//                        .description("读取技能的参考文档")
+//                        .skillNameParameterDescription("文档所属的技能名称")
+//                        .relativePathParameterDescription("要读取的文档的路径")
+//                        .build())
+//                .build();
+
 
         // 工具调用监听器，记录每次工具调用的名称和来源，用于区分 Skills 触发还是直接触发
         // 因为即使不通过 Skill 该逻辑也是能跑通，这里为了验证确实激活了 Skills 打印了下面的日志。
@@ -115,6 +145,7 @@ public class SkillsLLMConfig {
         return AiServices.builder(SkillsAssistant.class)
                 .chatModel(chatModel)
                 // 使用 CompositeToolProvider 组合 Skills 工具和 MCP 工具
+                // 因为当前版本只能指定一个 ToolProvider, 因此编写一个 CompositeToolProvider
                 .toolProvider(CompositeToolProvider.of(skills.toolProvider(), mcpToolProvider))
                 // 注册工具调用监听器，记录调用链路
                 .registerListener(toolExecutedListener)
